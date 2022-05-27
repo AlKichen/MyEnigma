@@ -1,0 +1,71 @@
+import java.io.*;
+
+
+/*
+Программа запускается с одним из следующих наборов параметров:
+-e fileName fileOutputName
+-d fileName fileOutputName
+
+где:
+fileName - имя файла, который необходимо зашифровать/расшифровать.
+fileOutputName - имя файла, куда необходимо записать результат шифрования/дешифрования.
+-e - ключ указывает, что необходимо зашифровать данные.
+-d - ключ указывает, что необходимо расшифровать данные.
+*/
+
+public class MyEnigma {
+    public static void main(String[] args) {
+        switch (args[0]) {
+            case "-e":
+                encrypt(args[1], args[2]);
+                break;
+            case "-d":
+                decryption(args[1], args[2]);
+                break;
+        }
+    }
+
+    public static void encrypt(String fileName, String fileOutputName) {    // метод для зашифровки
+        try (FileInputStream fis = new FileInputStream(fileName);           //поток для считывания байт из файла (исходные данные)
+             FileOutputStream fos = new FileOutputStream(fileOutputName)) { // поток для записи байт в файл (защифрованные данные)
+            byte key = (byte) Math.ceil(Math.random() * 9);                 // получение рандомного числа от 0 до 9 включительно (это ключ)
+            byte[] bytes = new byte[fis.available() + 1];                   // создаем массив из байт, в котором будем хранить считанные байты + ключ(last index)
+            if (fis.available() > 0) {
+                int count = fis.read(bytes);                                // заполняем массив байтами из потока (файла)
+            }
+            for (int i = 0; i < bytes.length - 1; i++) {                    // проходим по массиву байт
+                char ch = (char) bytes[i];                                  // приводим каждый байт к символу char
+                bytes[i] = (byte) ((int) ch + key);                         // узнаем порядковый номер сивола char добавляем к нему ключ, приводим к типу байт и перезаписываем
+            }
+            bytes[bytes.length - 1] = key;                                  // добавляем в массив байт последним символом ключ шифрования
+            fos.write(bytes);                                               // записываем в файл полученный массив с ключом
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void decryption(String fileName, String fileOutputName) { // метод для расшифровки
+        try (FileInputStream fis = new FileInputStream(fileName);           //поток для считывания байт из файла (зашифрованные данные)
+             FileOutputStream fos = new FileOutputStream(fileOutputName)) { // поток для записи в файл (расшифрованные данные)
+            byte[] bytes = new byte[fis.available()];                       // создаем массив из байт для хранения полученных (зашифрованных) данных
+            byte[] bytesWrite = new byte[bytes.length - 1];                 // создаем вспомогательный массив размером на один меньше (без ключа)
+            if (fis.available() > 0) {
+                int count = fis.read(bytes);                                //заполняем массив байтами из файла с зашифрованным сообщением
+            }
+            byte key = bytes[bytes.length - 1];                             //определяем какое число является ключом
+            for (int i = 0; i < bytes.length - 1; i++) {                    // проходим по массиву байт
+                char ch = (char) bytes[i];                                  // приводим каждый байт к символу char
+                bytesWrite[i] = (byte) ((int) ch - key);                    //узнаем порядковый номер символа char и отнимает от него ключ
+            }                                                               //записываем во вспомогательный массив
+            fos.write(bytesWrite);                                          // записываем в файл полученный массив байт с расшифрованными данными
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}
