@@ -28,7 +28,7 @@ public class MyEnigma {
     public static void encrypt(String fileName, String fileOutputName) {    // метод для зашифровки
         try (FileInputStream fis = new FileInputStream(fileName);           //поток для считывания байт из файла (исходные данные)
              FileOutputStream fos = new FileOutputStream(fileOutputName)) { // поток для записи байт в файл (защифрованные данные)
-            byte key = (byte) Math.ceil(Math.random() * 9);                 // получение рандомного числа от 0 до 9 включительно (это ключ)
+            byte key = (byte) Math.ceil(1 + Math.random() * 9);             // получение рандомного числа от 1 до 9 включительно (это ключ)
             byte[] bytes = new byte[fis.available() + 1];                   // создаем массив из байт, в котором будем хранить считанные байты + ключ(last index)
             if (fis.available() > 0) {
                 int count = fis.read(bytes);                                // заполняем массив байтами из потока (файла)
