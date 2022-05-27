@@ -14,6 +14,8 @@ fileOutputName - имя файла, куда необходимо записат
 */
 
 public class MyEnigma {
+    private static int numberOfEncryptions = (int) Math.ceil(3 + Math.random() * 9);
+
     public static void main(String[] args) {
         switch (args[0]) {
             case "-e":
@@ -29,15 +31,20 @@ public class MyEnigma {
         try (FileInputStream fis = new FileInputStream(fileName);           //поток для считывания байт из файла (исходные данные)
              FileOutputStream fos = new FileOutputStream(fileOutputName)) { // поток для записи байт в файл (защифрованные данные)
             byte key = (byte) Math.ceil(1 + Math.random() * 9);             // получение рандомного числа от 1 до 9 включительно (это ключ)
-            byte[] bytes = new byte[fis.available() + 1];                   // создаем массив из байт, в котором будем хранить считанные байты + ключ(last index)
+            byte[] bytes = new byte[fis.available() + 2];                   // создаем массив из байт, в котором будем хранить считанные байты + ключ(last index) + кол-во итераций
             if (fis.available() > 0) {
                 int count = fis.read(bytes);                                // заполняем массив байтами из потока (файла)
             }
-            for (int i = 0; i < bytes.length - 1; i++) {                    // проходим по массиву байт
-                char ch = (char) bytes[i];                                  // приводим каждый байт к символу char
-                bytes[i] = (byte) ((int) ch + key);                         // узнаем порядковый номер сивола char добавляем к нему ключ, приводим к типу байт и перезаписываем
+            for (int j = 1; j <= numberOfEncryptions; j++) {
+                for (int i = 0; i < bytes.length - 2; i++) {                    // проходим по массиву байт
+                    char ch = (char) bytes[i];                                  // приводим каждый байт к символу char
+                    bytes[i] = (byte) ((int) ch + key);                         // узнаем порядковый номер сивола char добавляем к нему ключ, приводим к типу байт и перезаписываем
+                }
+                bytes[bytes.length - 2] = key;                                  // добавляем в массив байт последним символом ключ шифрования
+                if (j == numberOfEncryptions) {
+                    bytes[bytes.length - 1] = (byte) numberOfEncryptions;
+                }
             }
-            bytes[bytes.length - 1] = key;                                  // добавляем в массив байт последним символом ключ шифрования
             fos.write(bytes);                                               // записываем в файл полученный массив с ключом
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -50,15 +57,18 @@ public class MyEnigma {
         try (FileInputStream fis = new FileInputStream(fileName);           //поток для считывания байт из файла (зашифрованные данные)
              FileOutputStream fos = new FileOutputStream(fileOutputName)) { // поток для записи в файл (расшифрованные данные)
             byte[] bytes = new byte[fis.available()];                       // создаем массив из байт для хранения полученных (зашифрованных) данных
-            byte[] bytesWrite = new byte[bytes.length - 1];                 // создаем вспомогательный массив размером на один меньше (без ключа)
+            byte[] bytesWrite = new byte[bytes.length - 2];                 // создаем вспомогательный массив размером на один меньше (без ключа)
             if (fis.available() > 0) {
                 int count = fis.read(bytes);                                //заполняем массив байтами из файла с зашифрованным сообщением
             }
-            byte key = bytes[bytes.length - 1];                             //определяем какое число является ключом
-            for (int i = 0; i < bytes.length - 1; i++) {                    // проходим по массиву байт
-                char ch = (char) bytes[i];                                  // приводим каждый байт к символу char
-                bytesWrite[i] = (byte) ((int) ch - key);                    //узнаем порядковый номер символа char и отнимает от него ключ
-            }                                                               //записываем во вспомогательный массив
+            byte numberOfEncryptionsRead = bytes[bytes.length - 1];
+            for (int j = 1; j <= numberOfEncryptionsRead; j++) {
+                byte key = bytes[bytes.length - 2];                             //определяем какое число является ключом
+                for (int i = 0; i < bytes.length - 2; i++) {                    // проходим по массиву байт
+                    char ch = (char) bytes[i];                                  // приводим каждый байт к символу char
+                    bytesWrite[i] = (byte) ((int) ch - key);                    //узнаем порядковый номер символа char и отнимает от него ключ
+                }                                                               //записываем во вспомогательный массив
+            }
             fos.write(bytesWrite);                                          // записываем в файл полученный массив байт с расшифрованными данными
         } catch (FileNotFoundException e) {
             e.printStackTrace();
