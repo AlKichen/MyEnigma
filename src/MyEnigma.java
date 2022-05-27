@@ -35,7 +35,7 @@ public class MyEnigma {
             if (fis.available() > 0) {
                 int count = fis.read(bytes);                                // заполняем массив байтами из потока (файла)
             }
-            for (int j = 1; j <= numberOfEncryptions; j++) {
+            for (int j = 0; j <= numberOfEncryptions; j++) {
                 for (int i = 0; i < bytes.length - 2; i++) {                    // проходим по массиву байт
                     char ch = (char) bytes[i];                                  // приводим каждый байт к символу char
                     bytes[i] = (byte) ((int) ch + key);                         // узнаем порядковый номер сивола char добавляем к нему ключ, приводим к типу байт и перезаписываем
@@ -58,13 +58,16 @@ public class MyEnigma {
              FileOutputStream fos = new FileOutputStream(fileOutputName)) { // поток для записи в файл (расшифрованные данные)
             byte[] bytes = new byte[fis.available()];                       // создаем массив из байт для хранения полученных (зашифрованных) данных
             byte[] bytesWrite = new byte[bytes.length - 2];                 // создаем вспомогательный массив размером на один меньше (без ключа)
+            for (int i = 0; i < bytesWrite.length; i++) {
+                bytesWrite[i] = bytes[i];
+            }
             if (fis.available() > 0) {
                 int count = fis.read(bytes);                                //заполняем массив байтами из файла с зашифрованным сообщением
             }
             byte numberOfEncryptionsRead = bytes[bytes.length - 1];
-            for (int j = 1; j <= numberOfEncryptionsRead; j++) {
-                byte key = bytes[bytes.length - 2];                             //определяем какое число является ключом
-                for (int i = 0; i < bytes.length - 2; i++) {                    // проходим по массиву байт
+            for (int j = 0; j <= numberOfEncryptionsRead; j++) {
+                byte key = bytesWrite[bytesWrite.length - 2];                             //определяем какое число является ключом
+                for (int i = 0; i < bytesWrite.length - 2; i++) {                    // проходим по массиву байт
                     char ch = (char) bytes[i];                                  // приводим каждый байт к символу char
                     bytesWrite[i] = (byte) ((int) ch - key);                    //узнаем порядковый номер символа char и отнимает от него ключ
                 }                                                               //записываем во вспомогательный массив
