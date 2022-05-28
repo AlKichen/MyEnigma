@@ -14,7 +14,7 @@ fileOutputName - имя файла, куда необходимо записат
 */
 
 public class MyEnigma2 {
-    private static int numberOfEncryptions = (int) Math.ceil(3 + Math.random() * 126); // создаем число итераций шифрования (от 3 до 9 включительно)
+    private static int numberOfEncryptions = (int) Math.ceil(3 + Math.random() * 126); // создаем число итераций шифрования (от 3 до 126 включительно)
 
     public static void main(String[] args) {
         switch (args[0]) {
