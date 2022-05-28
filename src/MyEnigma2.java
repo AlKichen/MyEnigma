@@ -13,10 +13,8 @@ fileOutputName - имя файла, куда необходимо записат
 -d - ключ указывает, что необходимо расшифровать данные.
 */
 
-public class MyEnigma {
-
+public class MyEnigma2 {
     private static int numberOfEncryptions = (int) Math.ceil(3 + Math.random() * 9); // создаем число итераций шифрования (от 3 до 9 включительно)
-
 
     public static void main(String[] args) {
         switch (args[0]) {
@@ -37,7 +35,6 @@ public class MyEnigma {
             if (fis.available() > 0) {
                 int count = fis.read(bytes);                                // заполняем массив байтами из потока (файла)
             }
-
             for (int j = 0; j <= numberOfEncryptions; j++) {                //запускаем цикл равный кол-ву итераций шифрования
                 for (int i = 0; i < bytes.length - 2; i++) {                // проходим по массиву байт
                     char ch = (char) bytes[i];                              // приводим каждый байт к символу char
@@ -49,7 +46,6 @@ public class MyEnigma {
                 }
             }
             fos.write(bytes);                                               // записываем в файл полученный массив с ключом и кол-вом итераций
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
